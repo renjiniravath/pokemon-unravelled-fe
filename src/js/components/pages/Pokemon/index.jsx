@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Spinner, Container, Row, Col } from 'reactstrap';
-import { getPokemonDetails, getPokemonList } from '../../../api/pokemon';
+import { getPokemonDetails, getPokemonList, getGenerationsApplicable } from '../../../api/pokemon';
 import { listGenerations } from "../../../api/generation";
 import './index.css';
 import TypeBox from '../../commonComponents/TypeBox';
@@ -18,19 +18,24 @@ class Pokemon extends React.Component {
         getPokemonDetails(this.props.match.params.id).then((response) => {
             this.setState({
                 pokemonDetails: response.data,
+            }, () => {
+                this.getGenerations();
             })
         })
-        this.getGenerations();
     }
 
     getGenerations = () => {
-        listGenerations().then((response) => {
+        let params = {
+            id: this.state.pokemonDetails.id,
+            formId: this.state.pokemonDetails.formId,
+        }
+        getGenerationsApplicable(params).then((response) => {
             this.setState({
                 generations: response.data,
             })
             this.chooseGeneration(response.data[response.data.length - 1].id)
         }).catch((error) => {
-            console.log("Error while getting list of generations ", error)
+            console.log("Error while getting list of applicable generations")
         })
     }
 
@@ -57,6 +62,7 @@ class Pokemon extends React.Component {
             generationId,
         } = this.state;
         var id = 0;
+        console.log("pokemonDetails ", pokemonDetails)
         id = pokemonDetails.id > 100 ? pokemonDetails.id : pokemonDetails.id > 10 ? "0" + pokemonDetails.id : "00" + pokemonDetails.id;
         return (
             <Fragment>

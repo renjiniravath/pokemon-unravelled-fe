@@ -14,3 +14,11 @@ export const getPokemonDetails = (id) => {
     url: `/pokemon/${id}`,
   })
 }
+
+export const getGenerationsApplicable = (params) => {
+  return fetch({
+    method: 'GET',
+    url: '/pokemon/generations',
+    params,
+  })
+}
