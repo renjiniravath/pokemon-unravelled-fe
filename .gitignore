@@ -1,0 +1,11 @@
+node_modules
+*.iml
+.idea
+dist
+.DS_Store
+npm-debug.log
+.sass-cache
+babel-cache
+npm-debug.log
+yarn-error.log
+.vs-code

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+  <meta name="theme-color" content="#FF7F0E">
+  <link href="/media/images/favicon.png" rel="icon"/>
+  <link rel="apple-touch-icon" href="/media/images/favicon.png"/>
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+</head>
+<body>
+	<div id="app"></div>
+</body>
+</html>
