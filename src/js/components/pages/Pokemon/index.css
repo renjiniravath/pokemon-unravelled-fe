@@ -12,3 +12,12 @@ p {
 .pokemon-details {
   /* margin: 40px; */
 }
+
+.left-header {
+  text-align: end;
+}
+
+.generation-selected {
+  text-decoration: underline !important;
+  color: orchid !important;
+}

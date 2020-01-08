@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Spinner, Container, Row, Col } from 'reactstrap';
-import { getPokemonDetails } from '../../../api/pokemon';
+import { getPokemonDetails, getPokemonList } from '../../../api/pokemon';
 import { listGenerations } from "../../../api/generation";
 import './index.css';
 import TypeBox from '../../commonComponents/TypeBox';
@@ -11,6 +11,7 @@ class Pokemon extends React.Component {
         this.state = {
             pokemonDetails: {},
             generations: [],
+            generationId: 0,
         }
     }
     componentDidMount = () => {
@@ -27,19 +28,33 @@ class Pokemon extends React.Component {
             this.setState({
                 generations: response.data,
             })
-            this.searchValueChange("generationId", response.data[response.data.length - 1].id)
+            this.chooseGeneration(response.data[response.data.length - 1].id)
         }).catch((error) => {
             console.log("Error while getting list of generations ", error)
         })
     }
 
-    chooseGeneration = (id) => {
-        // poke
+    chooseGeneration = (generationId) => {
+        let params = {
+            id: this.state.pokemonDetails.id,
+            generationId: generationId,
+        }
+        getPokemonList(params).then((response) => {
+            let pokemonDetails = response.data.filter((pokemon) => {
+                return pokemon.id === this.state.pokemonDetails.id && pokemon.formId === this.state.pokemonDetails.formId
+            })
+            this.setState({
+                generationId,
+                pokemonDetails: pokemonDetails[0],
+            })
+        })
     }
 
     render() {
         const {
             pokemonDetails,
+            generations,
+            generationId,
         } = this.state;
         var id = 0;
         id = pokemonDetails.id > 100 ? pokemonDetails.id : pokemonDetails.id > 10 ? "0" + pokemonDetails.id : "00" + pokemonDetails.id;
@@ -47,49 +62,73 @@ class Pokemon extends React.Component {
             <Fragment>
                 <section className="characters-section character-one">
                     <div className="pokemon-details">
-                        <h1>
-                            {pokemonDetails.name}
-                        </h1>
-                        <Container style={{ color: "white", marginTop: "10px" }}>
+                        <Container>
                             <Row>
-                                <Col xs="3">
-                                    <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/full/${id}.png`} />
+                                <Col xs="7">
+                                    <h1>
+                                        {pokemonDetails.formName} {pokemonDetails.name}
+                                    </h1>
                                 </Col>
                                 <Col>
-                                    <Container>
-                                        <Row>
-                                            <Col>
-                                                <strong>Type</strong>
-                                            </Col>
-                                            <Col>
-                                                <TypeBox type="Fire" /><TypeBox type="Flying" />
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col>
-                                                <strong>Abilities</strong>
-                                            </Col>
-                                            <Col>
-                                                Flash Fire,Solar Power
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col>
-                                                <strong>Smogon Tier</strong>
-                                            </Col>
-                                            <Col>
-                                                OU
-                                            </Col>
-                                        </Row>
-                                    </Container>
-                                </Col>
-                                <Col>
+                                    <div className="left-header">
+                                        <p>Generation</p>
+                                        <p>
+                                            {
+                                                generations && generations.length > 0 &&
+                                                generations.map((generation, index) => {
+                                                    return (
+                                                        <Fragment key={generation.id}>
+                                                            <span>{index != 0 ? "/" : ""}</span>
+                                                            <a href="" className={generationId === generation.id ? "generation-selected" : ""} onClick={(e) => { e.preventDefault(); this.chooseGeneration(generation.id); }}>{generation.name}</a>
+                                                        </Fragment>
+                                                    )
+                                                })
+                                            }
+                                        </p>
+                                    </div>
                                 </Col>
                             </Row>
                         </Container>
                     </div>
+                    <Container style={{ color: "white", marginTop: "10px" }}>
+                        <Row>
+                            <Col xs="3">
+                                <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/full/${id}.png`} />
+                            </Col>
+                            <Col>
+                                <Container>
+                                    <Row>
+                                        <Col>
+                                            <strong>Type</strong>
+                                        </Col>
+                                        <Col>
+                                            <TypeBox type="Fire" /><TypeBox type="Flying" />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <strong>Abilities</strong>
+                                        </Col>
+                                        <Col>
+                                            Flash Fire,Solar Power
+                                            </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <strong>Smogon Tier</strong>
+                                        </Col>
+                                        <Col>
+                                            OU
+                                            </Col>
+                                    </Row>
+                                </Container>
+                            </Col>
+                            <Col>
+                            </Col>
+                        </Row>
+                    </Container>
                 </section>
-            </Fragment>
+            </Fragment >
         )
     }
 }
