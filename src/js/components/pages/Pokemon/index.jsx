@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Spinner, Container, Row, Col } from 'reactstrap';
+import { Spinner, Container, Row, Col, Progress } from 'reactstrap';
 import { getPokemonDetails, getPokemonList, getGenerationsApplicable } from '../../../api/pokemon';
 import { listGenerations } from "../../../api/generation";
 import './index.css';
@@ -55,6 +55,15 @@ class Pokemon extends React.Component {
         })
     }
 
+    getBar = (field) => {
+        const pokemonDetails = this.state.pokemonDetails;
+        if (pokemonDetails != {}) {
+            return <Progress value={pokemonDetails[field] * 100 / 255} color={pokemonDetails[field] > 95 ? "success" : pokemonDetails[field] > 70 ? "warning" : "danger"}></Progress>
+        } else {
+            return <Progress />
+        }
+    }
+
     render() {
         const {
             pokemonDetails,
@@ -62,8 +71,8 @@ class Pokemon extends React.Component {
             generationId,
         } = this.state;
         var id = 0;
-        console.log("pokemonDetails ", pokemonDetails)
         id = pokemonDetails.id > 100 ? pokemonDetails.id : pokemonDetails.id > 10 ? "0" + pokemonDetails.id : "00" + pokemonDetails.id;
+        let pokemonFormName = pokemonDetails.formName ? pokemonDetails.formName.split('-') : ["", ""];
         return (
             <Fragment>
                 <section className="characters-section character-one">
@@ -71,9 +80,9 @@ class Pokemon extends React.Component {
                         <Container>
                             <Row>
                                 <Col xs="7">
-                                    <h1>
-                                        {pokemonDetails.formName} {pokemonDetails.name}
-                                    </h1>
+                                    <h2>
+                                        #{pokemonDetails.id} {pokemonFormName[0]} {pokemonDetails.name} {pokemonFormName[1]}
+                                    </h2>
                                 </Col>
                                 <Col>
                                     <div className="left-header">
@@ -130,6 +139,93 @@ class Pokemon extends React.Component {
                                 </Container>
                             </Col>
                             <Col>
+                                <Container>
+                                    <Row>
+                                        <Col>
+                                            <p style={{ textAlign: "center" }}>
+                                                Base Stats
+                                            </p>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="2">
+                                            Atk
+                                        </Col>
+                                        <Col>
+                                            {
+                                                this.getBar("attack")
+                                            }
+                                        </Col>
+                                        <Col xs="1">
+                                            {pokemonDetails.attack}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="2">
+                                            Def
+                                        </Col>
+                                        <Col>
+                                            {
+                                                this.getBar("defense")
+                                            }
+                                        </Col>
+                                        <Col xs="1">
+                                            {pokemonDetails.defense}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="2">
+                                            Speed
+                                        </Col>
+                                        <Col>
+                                            {
+                                                this.getBar("speed")
+                                            }
+                                        </Col>
+                                        <Col xs="1">
+                                            {pokemonDetails.speed}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="2">
+                                            SpAtk
+                                        </Col>
+                                        <Col>
+                                            {
+                                                this.getBar("specialAttack")
+                                            }
+                                        </Col>
+                                        <Col xs="1">
+                                            {pokemonDetails.specialAttack}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="2">
+                                            SpDef
+                                        </Col>
+                                        <Col>
+                                            {
+                                                this.getBar("specialDefense")
+                                            }
+                                        </Col>
+                                        <Col xs="1">
+                                            {pokemonDetails.specialDefense}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="2">
+                                            HP
+                                        </Col>
+                                        <Col>
+                                            {
+                                                this.getBar("hp")
+                                            }
+                                        </Col>
+                                        <Col xs="1">
+                                            {pokemonDetails.hp}
+                                        </Col>
+                                    </Row>
+                                </Container>
                             </Col>
                         </Row>
                     </Container>

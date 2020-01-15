@@ -9,8 +9,8 @@ p {
   text-align: center;
 }
 
-.pokemon-details {
-  /* margin: 40px; */
+.progress {
+  background-color: transparent;
 }
 
 .left-header {
