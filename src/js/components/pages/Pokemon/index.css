@@ -1,9 +1,9 @@
 .pokemon-details h1,
-h2,
-h3,
-h4,
-h5,
-h6,
+.pokemon-details h2,
+.pokemon-details h3,
+.pokemon-details h4,
+.pokemon-details h5,
+.pokemon-details h6,
 p {
   color: white;
   text-align: center;

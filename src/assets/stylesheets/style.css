@@ -18,6 +18,12 @@ body {
   font-smoothing: antialiased;
 }
 
+img {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
 h1,
 h2,
 h3,
@@ -1009,6 +1015,20 @@ Other pages
   position: relative;
   padding-top: 210px;
   text-align: center;
+}
+
+@media screen and (max-width: 500px) {
+  .page-top-section {
+    height: 220px;
+  }
+
+  .pokedex-heading {
+    margin-top: -100px;
+  }
+
+  .characters-section {
+    padding: 0px !important;
+  }
 }
 
 .page-top-section:after {

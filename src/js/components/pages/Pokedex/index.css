@@ -1,8 +1,32 @@
-.left-header {
-  text-align: end;
-}
-
 .generation-selected {
   text-decoration: underline !important;
   color: orchid !important;
+}
+
+.generation-box {
+  margin-top: 0.5rem;
+}
+
+.gen-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.pokemon-list {
+  color: white;
+}
+
+.list-heading {
+  font-weight: 1000;
+}
+
+@media screen and (max-width: 767px) {
+  .filter-input {
+    width: 67%;
+  }
+
+  .filter-label {
+    width: 33%;
+    text-align: center;
+  }
 }

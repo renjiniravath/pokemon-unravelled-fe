@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Promise from 'bluebird';
 import {
   API_ROOT
 } from '../config';
