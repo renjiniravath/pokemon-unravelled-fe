@@ -1868,3 +1868,8 @@ Responsive
     font-size: 36px;
   }
 }
+
+.white-mode {
+  color: #000;
+  background-color: #ecedd3;
+}

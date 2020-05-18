@@ -30,7 +30,11 @@ class Pokedex extends React.Component {
     componentDidMount = () => {
         this.getGenerations();
         this.getTypes();
+        window.scrollTo(0, 0)
         document.addEventListener('scroll', this.trackScrolling);
+    }
+    componentWillUnmount = () => {
+        document.removeEventListener('scroll', this.trackScrolling);
     }
     trackScrolling = () => {
         const wrappedElement = document.getElementById('tableItem');
@@ -231,7 +235,7 @@ class Pokedex extends React.Component {
                                             <Fragment key={index} >
                                                 <div className="row mb-4 d-none d-lg-flex">
                                                     <div className="col-md-1">{poke.id}</div>
-                                                    <div className="col-md-3"><Link to={`/pokemon/${poke.uniqueId}`}>{name}</Link><img src={imgSrc} width="48px" height="36px" /></div>
+                                                    <div className="col-md-3"><Link to={`/pokemon/${poke.id}`}>{name}</Link><img src={imgSrc} width="48px" height="36px" /></div>
                                                     <div className="col-md-2">
                                                         <TypeBox type={poke.primaryType} />
                                                         <TypeBox type={poke.secondaryType} />
@@ -276,7 +280,7 @@ class Pokedex extends React.Component {
                                                 <div className="d-lg-none my-3">
                                                     <div className="d-flex flex-wrap">
                                                         <div className="py-3 mr-2 mr-sm-3">#{poke.id}</div>
-                                                        <div className="py-3 mr-2 mr-sm-3" style={{ fontSize: "large" }}><Link to={`/pokemon/${poke.uniqueId}`}>{name}</Link></div>
+                                                        <div className="py-3 mr-2 mr-sm-3" style={{ fontSize: "large" }}><Link to={`/pokemon/${poke.id}`}>{name}</Link></div>
                                                         <div className="d-flex">
                                                             <img src={imgSrc} style={{ minWidth: "80px", minHeight: "60px" }} className="mr-2 mr-sm-3" />
                                                             <div className="pt-2 text-left">

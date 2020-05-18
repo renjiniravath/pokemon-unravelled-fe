@@ -1,14 +1,3 @@
-.pokemon-details h1,
-.pokemon-details h2,
-.pokemon-details h3,
-.pokemon-details h4,
-.pokemon-details h5,
-.pokemon-details h6,
-p {
-  color: white;
-  text-align: center;
-}
-
 .progress {
   background-color: transparent;
 }
@@ -20,4 +9,31 @@ p {
 .generation-selected {
   text-decoration: underline !important;
   color: orchid !important;
+}
+
+.pokemon-container {
+  margin-top: 57px;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.arrow-icon-text {
+  font-size: 15px;
+}
+
+.nav-heading {
+  border-bottom-color: transparent;
+}
+
+.active-tab {
+  background-color: #57595c;
+  border-color: #6e737a !important;
+}
+
+.info-box {
+  width: 400px;
+  display: flex;
+  align-items: center;
 }

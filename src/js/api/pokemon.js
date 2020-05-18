@@ -8,17 +8,16 @@ export const getPokemonList = (params) => {
   })
 };
 
-export const getPokemonDetails = (id) => {
+export const getPokemonDetails = (pokeId, genId) => {
   return fetch({
     method: 'GET',
-    url: `/pokemon/${id}`,
+    url: `/pokemon/${pokeId}/generation/${genId}`,
   })
 }
 
-export const getGenerationsApplicable = (params) => {
+export const getGenerationsApplicable = (id) => {
   return fetch({
     method: 'GET',
-    url: '/pokemon/generations',
-    params,
+    url: `/pokemon/${id}/generations`,
   })
 }

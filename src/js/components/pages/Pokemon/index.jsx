@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Spinner, Container, Row, Col, Progress } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardTitle, CardText, Container, Row, Col, Progress } from 'reactstrap';
 import { getPokemonDetails, getPokemonList, getGenerationsApplicable } from '../../../api/pokemon';
 import { listGenerations } from "../../../api/generation";
 import './index.css';
@@ -9,59 +9,191 @@ class Pokemon extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            pokemonDetails: {},
+            pokemonDetails: [{
+                uniqueId: 0,
+                name: "",
+                formName: "",
+            }],
             generations: [],
             generationId: 0,
+            activeTab: 1,
+            prevPokemon: {},
+            nextPokemon: {},
         }
     }
     componentDidMount = () => {
-        getPokemonDetails(this.props.match.params.id).then((response) => {
-            this.setState({
-                pokemonDetails: response.data,
-            }, () => {
-                this.getGenerations();
-            })
-        })
+        window.scrollTo(0, 0)
+        this.getDetails();
     }
 
-    getGenerations = () => {
-        let params = {
-            id: this.state.pokemonDetails.id,
-            formId: this.state.pokemonDetails.formId,
-        }
-        getGenerationsApplicable(params).then((response) => {
+    getDetails = (generationId) => {
+        getGenerationsApplicable(this.props.match.params.id).then((response) => {
             this.setState({
                 generations: response.data,
             })
-            this.chooseGeneration(response.data[response.data.length - 1].id)
+            this.chooseGeneration(generationId || response.data[response.data.length - 1].id)
         }).catch((error) => {
             console.log("Error while getting list of applicable generations")
         })
     }
 
     chooseGeneration = (generationId) => {
-        let params = {
-            id: this.state.pokemonDetails.id,
-            generationId: generationId,
-        }
-        getPokemonList(params).then((response) => {
-            let pokemonDetails = response.data.filter((pokemon) => {
-                return pokemon.id === this.state.pokemonDetails.id && pokemon.formId === this.state.pokemonDetails.formId
-            })
+        getPokemonDetails(this.props.match.params.id, generationId).then((response) => {
             this.setState({
                 generationId,
-                pokemonDetails: pokemonDetails[0],
+                pokemonDetails: response.data,
+                prevPokemon: response.prevPokemon,
+                nextPokemon: response.nextPokemon,
             })
         })
     }
 
-    getBar = (field) => {
-        const pokemonDetails = this.state.pokemonDetails;
-        if (pokemonDetails != {}) {
-            return <Progress value={pokemonDetails[field] * 100 / 255} color={pokemonDetails[field] > 95 ? "success" : pokemonDetails[field] > 70 ? "warning" : "danger"}></Progress>
-        } else {
-            return <Progress />
-        }
+    navigateToPokemon = (id) => {
+        this.props.history.push(`/pokemon/${id}`);
+        this.getDetails(this.state.generationId);
+    }
+
+    getBar = (value) => {
+        return (
+            <div className="col">
+                <Progress value={90} color={value > 95 ? "success" : value > 70 ? "warning" : "danger"}></Progress>
+            </div>
+        )
+    }
+
+    toggleForm = (activeTab) => {
+        this.setState({
+            activeTab,
+        })
+    }
+
+    showFormDetails = (pokemon) => {
+        const imageSrc = `/media/pokemon/sprites/${pokemon.formName.toLowerCase()}.gif`;
+        return (
+            <div className="d-flex flex-wrap justify-content-center">
+                <div>
+                    <img src={imageSrc} alt={pokemon.formName} width="160px" height="160px" />
+                </div>
+                <div className="ml-md-4 info-box py-3 py-md-0">
+                    <div className="w-100 ml-3">
+                        <div className="row">
+                            <strong className="col-6">National Dex</strong>
+                            <div className="col-6">{`${('000' + pokemon.id).substr(-3)}`}</div>
+                        </div>
+                        <div className="row">
+                            <strong className="col-6">Type</strong>
+                            <div className="d-flex col-6 text-white">
+                                <TypeBox type={pokemon.primaryType} /><TypeBox type={pokemon.secondaryType} />
+                            </div>
+                        </div>
+                        <div className="row">
+                            <strong className="col-6">Abilities</strong>
+                            <div className="col-6">
+                                <div>Flash Fire</div>
+                                <div className="text-info">Solar Power</div>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <strong className="col-6">Smogon Tier</strong>
+                            <div className="col-6">
+                                OU
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="ml-md-4 info-box py-3 py-md-0 w-100 w-md-75">
+                    <div className="w-100 ml-3">
+                        <div className="text-center">
+                            Base Stats
+                        </div>
+                        <div className="row">
+                            <div className="col-4 d-none d-md-block">
+                                Attack
+                            </div>
+                            <div className="d-md-none col-2">
+                                Atk
+                            </div>
+                            {
+                                this.getBar(pokemon.attack)
+                            }
+                            <div className="col">
+                                {pokemon.attack}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-4 d-none d-md-block">
+                                Defense
+                            </div>
+                            <div className="d-md-none col-2">
+                                Def
+                            </div>
+                            {
+                                this.getBar(pokemon.defense)
+                            }
+                            <div className="col">
+                                {pokemon.defense}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-4 d-none d-md-block">
+                                Speed
+                            </div>
+                            <div className="d-md-none col-2">
+                                Spe
+                            </div>
+                            {
+                                this.getBar(pokemon.speed)
+                            }
+                            <div className="col">
+                                {pokemon.speed}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-4 d-none d-md-block">
+                                Special Attack
+                            </div>
+                            <div className="d-md-none col-2">
+                                SpA
+                            </div>
+                            {
+                                this.getBar(pokemon.specialAttack)
+                            }
+                            <div className="col">
+                                {pokemon.specialAttack}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-4 d-none d-md-block">
+                                Special Defense
+                            </div>
+                            <div className="d-md-none col-2">
+                                SpD
+                            </div>
+                            {
+                                this.getBar(pokemon.specialDefense)
+                            }
+                            <div className="col">
+                                {pokemon.specialDefense}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-4 d-none d-md-block">
+                                HP
+                            </div>
+                            <div className="d-md-none col-2">
+                                HP
+                            </div>
+                            {
+                                this.getBar(pokemon.hp)
+                            }
+                            <div className="col">
+                                {pokemon.hp}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div >
+        )
     }
 
     render() {
@@ -69,168 +201,76 @@ class Pokemon extends React.Component {
             pokemonDetails,
             generations,
             generationId,
+            prevPokemon,
+            nextPokemon,
         } = this.state;
-        var id = 0;
-        id = pokemonDetails.id > 100 ? pokemonDetails.id : pokemonDetails.id > 10 ? "0" + pokemonDetails.id : "00" + pokemonDetails.id;
-        let pokemonFormName = pokemonDetails.formName ? pokemonDetails.formName.split('-') : ["", ""];
         return (
-            <Fragment>
-                <section className="characters-section character-one">
-                    <div className="pokemon-details">
-                        <Container>
-                            <Row>
-                                <Col xs="7">
-                                    <h2>
-                                        #{pokemonDetails.id} {pokemonFormName[0]} {pokemonDetails.name} {pokemonFormName[1]}
-                                    </h2>
-                                </Col>
-                                <Col>
-                                    <div className="left-header">
-                                        <p>Generation</p>
-                                        <p>
-                                            {
-                                                generations && generations.length > 0 &&
-                                                generations.map((generation, index) => {
-                                                    return (
-                                                        <Fragment key={generation.id}>
-                                                            <span>{index != 0 ? "/" : ""}</span>
-                                                            <a href="" className={generationId === generation.id ? "generation-selected" : ""} onClick={(e) => { e.preventDefault(); this.chooseGeneration(generation.id); }}>{generation.name}</a>
-                                                        </Fragment>
-                                                    )
-                                                })
-                                            }
-                                        </p>
-                                    </div>
-                                </Col>
-                            </Row>
-                        </Container>
+            <section className="characters-section character-one pokemon-container white-mode">
+                <div className="container pt-4 pt-sm-0">
+                    <div className="d-flex justify-content-between">
+                        <div className="d-flex align-items-center" onClick={() => this.navigateToPokemon(prevPokemon.id)}>
+                            <img src="/media/icons/arrow.png" width="30px" height="30px" className="rotate-180"></img>
+                            <p className="mb-0 arrow-icon-text">{`${('000' + prevPokemon.id).substr(-3)} ${prevPokemon.name}`}</p>
+                        </div>
+                        <div className="d-flex align-items-center" onClick={() => this.navigateToPokemon(nextPokemon.id)}>
+                            <p className="mb-0 arrow-icon-text text-right">{`${('000' + nextPokemon.id).substr(-3)} ${nextPokemon.name}`}</p>
+                            <img src="/media/icons/arrow.png" width="30px" height="30px"></img>
+                        </div>
                     </div>
-                    <Container style={{ color: "white", marginTop: "10px" }}>
-                        <Row>
-                            <Col xs="3">
-                                <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/full/${id}.png`} />
-                            </Col>
-                            <Col>
-                                <Container>
-                                    <Row>
-                                        <Col>
-                                            <strong>Type</strong>
-                                        </Col>
-                                        <Col>
-                                            <TypeBox type="Fire" /><TypeBox type="Flying" />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <strong>Abilities</strong>
-                                        </Col>
-                                        <Col>
-                                            Flash Fire,Solar Power
-                                            </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <strong>Smogon Tier</strong>
-                                        </Col>
-                                        <Col>
-                                            OU
-                                            </Col>
-                                    </Row>
-                                </Container>
-                            </Col>
-                            <Col>
-                                <Container>
-                                    <Row>
-                                        <Col>
-                                            <p style={{ textAlign: "center" }}>
-                                                Base Stats
-                                            </p>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs="2">
-                                            Atk
-                                        </Col>
-                                        <Col>
-                                            {
-                                                this.getBar("attack")
-                                            }
-                                        </Col>
-                                        <Col xs="1">
-                                            {pokemonDetails.attack}
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs="2">
-                                            Def
-                                        </Col>
-                                        <Col>
-                                            {
-                                                this.getBar("defense")
-                                            }
-                                        </Col>
-                                        <Col xs="1">
-                                            {pokemonDetails.defense}
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs="2">
-                                            Speed
-                                        </Col>
-                                        <Col>
-                                            {
-                                                this.getBar("speed")
-                                            }
-                                        </Col>
-                                        <Col xs="1">
-                                            {pokemonDetails.speed}
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs="2">
-                                            SpAtk
-                                        </Col>
-                                        <Col>
-                                            {
-                                                this.getBar("specialAttack")
-                                            }
-                                        </Col>
-                                        <Col xs="1">
-                                            {pokemonDetails.specialAttack}
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs="2">
-                                            SpDef
-                                        </Col>
-                                        <Col>
-                                            {
-                                                this.getBar("specialDefense")
-                                            }
-                                        </Col>
-                                        <Col xs="1">
-                                            {pokemonDetails.specialDefense}
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs="2">
-                                            HP
-                                        </Col>
-                                        <Col>
-                                            {
-                                                this.getBar("hp")
-                                            }
-                                        </Col>
-                                        <Col xs="1">
-                                            {pokemonDetails.hp}
-                                        </Col>
-                                    </Row>
-                                </Container>
-                            </Col>
-                        </Row>
-                    </Container>
-                </section>
-            </Fragment >
+                    <h2 className="text-center mt-3">{pokemonDetails[0].name}</h2>
+                    <div className="left-header mt-2">
+                        <p>Generation</p>
+                        <p>
+                            {
+                                generations && generations.length > 0 &&
+                                generations.map((generation, index) => {
+                                    return (
+                                        <Fragment key={generation.id}>
+                                            <span>{index != 0 ? "/" : ""}</span>
+                                            <a href="" className={generationId === generation.id ? "generation-selected" : ""} onClick={(e) => { e.preventDefault(); this.chooseGeneration(generation.id); }}>{generation.name}</a>
+                                        </Fragment>
+                                    )
+                                })
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <Container style={{ marginTop: "10px" }}>
+                    <Nav tabs className="nav-heading flex-nowrap">
+                        {
+                            pokemonDetails.length > 1 &&
+                            pokemonDetails.map((pokemon, index) => {
+                                return (
+                                    <NavItem key={pokemon.uniqueId}>
+                                        <NavLink
+                                            className={this.state.activeTab === index + 1 ? "active-tab bg-transparent text-primary" : "bg-transparent"}
+                                            onClick={() => { this.toggleForm(index + 1); }}
+                                        >
+                                            {pokemon.formName}
+                                        </NavLink>
+                                    </NavItem>
+                                )
+                            })
+                        }
+                    </Nav>
+                    <TabContent activeTab={this.state.activeTab} className="mt-4">
+                        {
+                            pokemonDetails.length > 0 &&
+                            pokemonDetails.map((pokemon, index) => {
+                                return (
+                                    <TabPane tabId={index + 1} key={pokemon.uniqueId}>
+                                        {
+                                            this.showFormDetails(pokemon)
+                                        }
+                                    </TabPane>
+                                )
+                            })
+                        }
+                    </TabContent>
+
+                </Container>
+            </section>
         )
     }
 }
